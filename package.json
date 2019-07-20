@@ -4,6 +4,7 @@
   "scripts": {
     "start": "expo start --tunnel",
     "start-clean": "expo start --tunnel --clear",
+    "start-lan": "expo start --lan --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject"

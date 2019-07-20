@@ -57,3 +57,7 @@ buck-out/
 
 # Jetbrains
 .idea/
+
+# Important Variables
+components/Variables.js
+*/Variables.js

@@ -1,4 +1,5 @@
 import {getPassword, getCoords} from './Utils';
+import {getApiUrl} from './Variables';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet} from 'react-native';
@@ -15,8 +16,21 @@ import {Ionicons} from '@expo/vector-icons';
 export default class Arrow extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {shouldShow: true};
         this.checkArrow = this.checkArrow.bind(this);
+        let directionsMessage = '';
+        const arrowType = this.props.arrowType;
+        const dateInEST = new Date(this.props.checkInTime).toLocaleString("en-US", {timeZone: "America/New_York"});
+        const untilDateEST = new Date(this.props.until).toLocaleString("en-US", {timeZone: "America/New_York"});
+        if (arrowType === 'beSomewhere'){
+            directionsMessage = `Be at dest at ${dateInEST} ${this.props.dateType}.\nEnds: ${untilDateEST}`
+        }
+        else if (arrowType === 'leaveSomewhere'){
+            directionsMessage = `Don't be at dest at ${dateInEST} ${this.props.dateType}.\nEnds: ${untilDateEST}`
+        }
+        else {
+            directionsMessage = `${arrowType} is an unsupported arrow type`;
+        }
+        this.state = {shouldShow: true, 'directionsMessage': directionsMessage};
     }
 
     async componentDidMount() {
@@ -28,6 +42,11 @@ export default class Arrow extends React.Component {
     }
 
     checkArrow = async (arrowId) => {
+        Toast.show({
+            text: 'Click registered, loading...',
+            buttonText: 'Okay',
+            duration: 3000,
+        });
         let coords;
         try {
             coords = await getCoords();
@@ -39,59 +58,55 @@ export default class Arrow extends React.Component {
             });
             return;
         }
-        console.log(getPassword());
-        //TODO change to your website
-        fetch('https://mywebsite.com/api/arrows/' + arrowId, {
+        console.log('coords');
+        console.log(coords);
+        const password = getPassword();
+        fetch(`${getApiUrl()}/arrows/` + this.props.arrowId, {
             method: 'DELETE',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                password: getPassword(),
+                checkInPassword: password,
                 latitude: coords.latitude,
                 longitude: coords.longitude,
             }),
         }).then((response) => response.json()).then((responseJson) => {
-            if (responseJson.status === 200) {
+            console.log('in respons');
+            console.log(responseJson);
+            if (responseJson && responseJson.reason) {
+                console.log('response json');
+                console.log(responseJson.reason);
                 Toast.show({
-                    text: 'Checked in today! ' + responseJson.message,
+                    text: responseJson.reason,
                     buttonText: 'Okay',
-                    duration: 3000,
-                });
-                this.setState({
-                    shouldShow: false,
+                    duration: 4000,
                 });
             } else {
                 Toast.show({
-                    text: 'Not 200: ' + responseJson.message,
+                    text: 'Error',
                     buttonText: 'Okay',
-                    duration: 3000,
+                    duration: 4000,
                 });
             }
         }).catch((error) => {
-            console.log('Error!');
+            console.log('Error in attempting DELETE /arrows!');
             console.log(error);
-            /**
-            error.text().then(errorMessage => {
-                Toast.show({
-                    text: 'Error: ' + errorMessage,
-                    buttonText: 'Okay',
-                    duration: 5000,
-                });
-            });
-             */
         });
     };
 
     render() {
         return (
-            <Card style={this.state.shouldShow ?
-                styles.showCard :
-                styles.hideCard}>
+            <Card>
                 <CardItem button onPress={this.checkArrow}>
-                    <Text>Be at {this.props.latitude},{this.props.longitude}
-                        by {this.props.checkInTime} {this.props.dateType} </Text>
+                    <Text>
+                        {this.props.label}
+                        {'\n'}
+                        {this.state.directionsMessage}
+                        {'\n\n'}
+                        {'Dest: ' + this.props.latitude + ', ' + this.props.longitude}
+                    </Text>
                 </CardItem>
             </Card>
         );
@@ -101,13 +116,17 @@ export default class Arrow extends React.Component {
 Arrow.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
-    dateType: PropTypes.string,
+    dateType: PropTypes.oneOf(['once', 'daily', 'weekly']),
     checkInTime: PropTypes.number,
+    label: PropTypes.string,
+    arrowType: PropTypes.string,
+    until: PropTypes.number,
+    arrowId: PropTypes.string,
 };
 
 const styles = StyleSheet.create({
-    showCard: {},
-    hideCard: {
-        display: 'none',
-    },
+    // showCard: {},
+    // hideCard: {
+    //     display: 'none',
+    // },
 });
