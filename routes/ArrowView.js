@@ -15,34 +15,36 @@ export default class ArrowView extends React.Component {
   componentDidMount() {
     console.log('getting');
     console.log(`${getApiUrl()}/arrows/`);
-    fetch(`${getApiUrl()}/arrows/`)
-      .then(response => response.json())
-      .then((arrowsArray) => {
-        const arrows = arrowsArray.map(arrowObj => (
-          <Arrow
-            latitude={arrowObj.latitude}
-            longitude={arrowObj.longitude}
-            dateType={arrowObj.dateType}
-            checkInTime={arrowObj.checkInTime}
-            label={arrowObj.label}
-            arrowType={arrowObj.arrowType}
-            until={arrowObj.until}
-            arrowId={arrowObj._id}
-            key={arrowObj.latitude + arrowObj.longitude
-                        + arrowObj.checkInTime}
-          />
-        ));
-        this.setState({arrows: arrows});
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    setInterval(() => {
+      fetch(`${getApiUrl()}/arrows/`)
+        .then(response => response.json())
+        .then((arrowsArray) => {
+          const arrows = arrowsArray.map(arrowObj => (
+            <Arrow
+              latitude={arrowObj.latitude}
+              longitude={arrowObj.longitude}
+              dateType={arrowObj.dateType}
+              checkInTime={arrowObj.checkInTime}
+              label={arrowObj.label}
+              arrowType={arrowObj.arrowType}
+              until={arrowObj.until}
+              arrowId={arrowObj._id}
+              key={arrowObj.latitude + arrowObj.longitude
+                            + arrowObj.checkInTime}
+            />
+          ));
+          this.setState({ arrows });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 20000);
   }
 
   render() {
     return (
       <Content>
-          {this.state.arrows}
+        {this.state.arrows}
       </Content>
     );
   }

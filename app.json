@@ -12,9 +12,9 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/paris_image.jpg",
+    "icon": "./assets/paris_image.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/paris_image.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,11 +22,11 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "paris-achilless"
+      "bundleIdentifier": "paris-achilles"
     }
   }
 }
