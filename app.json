@@ -5,7 +5,7 @@
     "name": "Paris",
     "slug": "Paris",
     "privacy": "public",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android"
@@ -27,6 +27,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "paris-achilles"
-    }
+    },
+    "description": "A custom alarm clock that forces me to be 200 meters from my home within 10 minutes of waking up.",
+    "githubUrl": "https://github.com/abagh0703/paris-app-front-end"
   }
 }

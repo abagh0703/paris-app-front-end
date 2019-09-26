@@ -1,9 +1,10 @@
 {
-  "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 32304,
+  "expoServerNgrokUrl": "https://cb-7fi.abagh0703.paris.exp.direct",
+  "packagerNgrokUrl": "https://packager.cb-7fi.abagh0703.paris.exp.direct",
+  "ngrokPid": 9388,
+  "webpackServerPort": null,
+  "devToolsPort": 19002
 }

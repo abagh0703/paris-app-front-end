@@ -12,10 +12,19 @@ export default class ArrowView extends React.Component {
     super(props);
     this.state = {
       arrows: [],
+      wakeUpTimes: [],
     };
   }
 
   componentDidMount() {
+    const wakeUpTimes = [0.25, 0.5, .75, 1, 5, 6, 6.25, 6.75, 7, 7.25, 7.75, 8, 8.25, 8.75, 9].map(numHours => (
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours)}>
+        <Text>
+          {numHours}
+        </Text>
+      </Button>
+    ));
+    this.setState({ wakeUpTimes });
     setInterval(() => {
       fetch(`${getApiUrl()}/arrows/`)
         .then(response => response.json())
@@ -60,6 +69,8 @@ export default class ArrowView extends React.Component {
   createNewBeHomeArrow(checkInTime) {
     const DRYDEN_LAT = 42.442136;
     const DRYDEN_LONG = -76.484368;
+    let roundedCheckInTime = this.roundTimeHalfHour(checkInTime);
+    roundedCheckInTime = roundedCheckInTime.getTime();
     fetch(`${getApiUrl()}/arrows/`, {
       method: 'post',
       headers: {
@@ -69,38 +80,52 @@ export default class ArrowView extends React.Component {
       body: JSON.stringify({
         latitude: DRYDEN_LAT,
         longitude: DRYDEN_LONG,
-        checkInTime,
+        checkInTime: roundedCheckInTime,
         dateType: 'once',
         arrowType: 'leaveSomewhere',
         label: 'Don\'t be home',
       }),
     }).then(response => response.json())
       .then((res) => {
+        const newArrow = (
+          <Arrow
+            latitude={res.latitude}
+            longitude={res.longitude}
+            dateType={res.dateType}
+            checkInTime={res.checkInTime}
+            label={res.label}
+            arrowType={res.arrowType}
+            until={res.until}
+            arrowId={res._id}
+            key={res.latitude + res.longitude
+            + res.checkInTime}
+          />
+        );
         this.setState(prevState => (
           {
-            arrows: [...prevState.arrows, res],
+            arrows: [...prevState.arrows, newArrow],
           }
         ));
       })
       .catch((error) => {
+        console.log('error in creating arrow!');
         console.error(error);
       });
   }
 
+  roundTimeHalfHour(time) {
+    const timeToReturn = new Date(time);
+    timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
+    timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
+    timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 30) * 30);
+    return timeToReturn;
+  }
 
   render() {
     return (
       <Content>
         <Text>Quick-Select How Long You Want To Sleep:</Text>
-        <Left>
-          {[6, 6.25, 6.75, 7, 7.25, 7.75, 8, 8.25, 8.75, 9].map(numHours => (
-            <Button light onPress={() => this.createArrowHoursAhead(numHours)}>
-              <Text>
-                {numHours}
-              </Text>
-            </Button>
-          ))}
-        </Left>
+        {this.state.wakeUpTimes}
         <Text>Arrows</Text>
         {this.state.arrows}
       </Content>
