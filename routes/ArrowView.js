@@ -6,6 +6,7 @@ import {
 // import { Col, Row, Grid } from 'react-native-easy-grid';
 import { getApiUrl } from '../components/Variables';
 import Arrow from '../components/Arrow';
+import {getCoords} from '../components/Utils';
 
 export default class ArrowView extends React.Component {
   constructor(props) {
@@ -13,18 +14,26 @@ export default class ArrowView extends React.Component {
     this.state = {
       arrows: [],
       wakeUpTimes: [],
+      beAtTimes: [],
     };
   }
 
   componentDidMount() {
-    const wakeUpTimes = [0.25, 0.5, .75, 1, 5, 6, 6.25, 6.75, 7, 7.25, 7.75, 8, 8.25, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours)}>
+    const wakeUpTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location')}>
         <Text>
           {numHours}
         </Text>
       </Button>
     ));
-    this.setState({ wakeUpTimes });
+    const beAtTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'upson')}>
+        <Text>
+          {numHours}
+        </Text>
+      </Button>
+    ));
+    this.setState({ wakeUpTimes, beAtTimes });
     setInterval(() => {
       fetch(`${getApiUrl()}/arrows/`)
         .then(response => response.json())
@@ -48,13 +57,46 @@ export default class ArrowView extends React.Component {
         .catch((error) => {
           console.error(error);
         });
-    }, 10000);
+    }, 5000);
   }
 
-  createArrowHoursAhead(numHoursAhead) {
+  createArrowHoursAhead = async(numHoursAhead, location) => {
     const currentMsTime = ((new Date()).getTime());
     const numHoursInMs = this.convertHoursToMs(numHoursAhead);
-    this.createNewBeHomeArrow(currentMsTime + numHoursInMs);
+    let lat = 0;
+    let long = 0;
+    let arrowType = 'leaveSomewhere';
+    if (location === 'Current Location') {
+      // previously was hardcoded Cornell home, now is current location
+      // lat = 42.442136;
+      // long = -76.484368;
+      let coords;
+      try {
+        coords = await getCoords();
+      } catch (e) {
+        Toast.show({
+          text: 'Error in getting coords: ' + e,
+          buttonText: 'Okay',
+          duration: 5000,
+        });
+        return;
+      }
+      lat = coords.latitude;
+      long = coords.longitude;
+    } else if (location === 'upson') {
+      lat = 42.445155;
+      long = -76.483463;
+      arrowType = 'beSomewhere';
+    } else {
+      return;
+    }
+    let checkIn = currentMsTime + numHoursInMs;
+    // don't round to the nearest half hour if the time is low
+    if (numHoursAhead > 1) {
+      checkIn = this.roundTimeQuarterHour(checkIn);
+      checkIn = checkIn.getTime();
+    }
+    this.createNewQuickArrow(checkIn, lat, long, arrowType);
     Toast.show({
       text: `Arrow for ${numHoursAhead} created.`,
       buttonText: 'Okay',
@@ -66,11 +108,13 @@ export default class ArrowView extends React.Component {
     return (hours * 60 * 60 * 1000);
   }
 
-  createNewBeHomeArrow(checkInTime) {
-    const DRYDEN_LAT = 42.442136;
-    const DRYDEN_LONG = -76.484368;
-    let roundedCheckInTime = this.roundTimeHalfHour(checkInTime);
-    roundedCheckInTime = roundedCheckInTime.getTime();
+  // PHILLIPS 42.445040, -76.479821
+
+  createNewQuickArrow(checkInTime, lat, long, arrowType) {
+    let label = 'Don\'t be home';
+    if (arrowType === 'beSomewhere') {
+      label = 'Be at Upson';
+    }
     fetch(`${getApiUrl()}/arrows/`, {
       method: 'post',
       headers: {
@@ -78,12 +122,12 @@ export default class ArrowView extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        latitude: DRYDEN_LAT,
-        longitude: DRYDEN_LONG,
-        checkInTime: roundedCheckInTime,
+        latitude: lat,
+        longitude: long,
+        checkInTime,
         dateType: 'once',
-        arrowType: 'leaveSomewhere',
-        label: 'Don\'t be home',
+        arrowType,
+        label,
       }),
     }).then(response => response.json())
       .then((res) => {
@@ -113,19 +157,30 @@ export default class ArrowView extends React.Component {
       });
   }
 
-  roundTimeHalfHour(time) {
+  roundTimeQuarterHour(time) {
     const timeToReturn = new Date(time);
     timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
     timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
-    timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 30) * 30);
+    timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 15) * 15);
+    /**
+     * 12 AM --> 7:30
+     * 12:01 AM --> 7:30
+     * 12:05 AM --> 7:30
+     * 12:06 AM --> 7:30
+     * 12:08 --> 7:45
+     * 12:14 AM --> 8
+     * 12:16 AM --> 8
+     */
     return timeToReturn;
   }
 
   render() {
     return (
       <Content>
-        <Text>Quick-Select How Long You Want To Sleep:</Text>
+        <Text>Quick-Select Leaving Current Location In:</Text>
         {this.state.wakeUpTimes}
+        <Text>Quick-Select Being At A Location In:</Text>
+        {this.state.beAtTimes}
         <Text>Arrows</Text>
         {this.state.arrows}
       </Content>
