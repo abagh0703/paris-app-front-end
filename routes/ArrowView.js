@@ -13,27 +13,38 @@ export default class ArrowView extends React.Component {
     super(props);
     this.state = {
       arrows: [],
-      wakeUpTimes: [],
+      wakeUpCloseTimes: [],
+      wakeUpFarTimes: [],
       beAtTimes: [],
+      nearHomeDistance: 45,
+      farFromHomeDistance: 300,
+      beNearCampusDistance: 250,
     };
   }
 
   componentDidMount() {
-    const wakeUpTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location')}>
+    const wakeUpCloseTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.nearHomeDistance)}>
+        <Text>
+          {numHours}
+        </Text>
+      </Button>
+    ));
+    const wakeUpFarTimes = [0.25, 0.5, 1, 7, 7.5, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.farFromHomeDistance)}>
         <Text>
           {numHours}
         </Text>
       </Button>
     ));
     const beAtTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'upson')}>
+      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'upson', this.state.beNearCampusDistance)}>
         <Text>
           {numHours}
         </Text>
       </Button>
     ));
-    this.setState({ wakeUpTimes, beAtTimes });
+    this.setState({ wakeUpCloseTimes, wakeUpFarTimes, beAtTimes });
     setInterval(() => {
       fetch(`${getApiUrl()}/arrows/`)
         .then(response => response.json())
@@ -60,7 +71,7 @@ export default class ArrowView extends React.Component {
     }, 5000);
   }
 
-  createArrowHoursAhead = async(numHoursAhead, location) => {
+  createArrowHoursAhead = async(numHoursAhead, location, distanceOverride) => {
     const currentMsTime = ((new Date()).getTime());
     const numHoursInMs = this.convertHoursToMs(numHoursAhead);
     let lat = 0;
@@ -96,7 +107,7 @@ export default class ArrowView extends React.Component {
       checkIn = this.roundTimeQuarterHour(checkIn);
       checkIn = checkIn.getTime();
     }
-    this.createNewQuickArrow(checkIn, lat, long, arrowType);
+    this.createNewQuickArrow(checkIn, lat, long, arrowType, distanceOverride);
     Toast.show({
       text: `Arrow for ${numHoursAhead} created.`,
       buttonText: 'Okay',
@@ -110,7 +121,7 @@ export default class ArrowView extends React.Component {
 
   // PHILLIPS 42.445040, -76.479821
 
-  createNewQuickArrow(checkInTime, lat, long, arrowType) {
+  createNewQuickArrow(checkInTime, lat, long, arrowType, distanceOverride) {
     let label = 'Don\'t be home';
     if (arrowType === 'beSomewhere') {
       label = 'Be at Upson';
@@ -128,6 +139,7 @@ export default class ArrowView extends React.Component {
         dateType: 'once',
         arrowType,
         label,
+        distanceOverride
       }),
     }).then(response => response.json())
       .then((res) => {
@@ -177,10 +189,13 @@ export default class ArrowView extends React.Component {
   render() {
     return (
       <Content>
-        <Text>Quick-Select Leaving Current Location In:</Text>
-        {this.state.wakeUpTimes}
-        <Text>Quick-Select Being At A Location In:</Text>
+        <Text>You'll go back to sleep if you don't have a far alarm!</Text>
+        <Text>(Getting Out of Bed) Be {this.state.nearHomeDistance}M From Current Location In:</Text>
+        {this.state.wakeUpCloseTimes}
+        <Text>Be within {this.state.beNearCampusDistance}M of Campus In:</Text>
         {this.state.beAtTimes}
+        <Text>Be {this.state.farFromHomeDistance} Meters From Current Location In:</Text>
+        {this.state.wakeUpFarTimes}
         <Text>Arrows</Text>
         {this.state.arrows}
       </Content>
