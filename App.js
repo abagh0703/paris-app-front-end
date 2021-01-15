@@ -25,7 +25,7 @@ export default class App extends React.Component {
         {/*    <ArrowView /> */}
         {/*  </Content> */}
         {/* </Container> */}
-        <Toast ref={(ref) => Toast.setRef(ref)} />
+        <Toast ref={ref => Toast.setRef(ref)} />
       </ScrollView>
     );
   }
