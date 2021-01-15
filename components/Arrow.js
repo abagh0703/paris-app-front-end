@@ -1,8 +1,10 @@
-import {getPassword, getCoords} from './Utils';
+import {getPassword} from './Utils';
 import {getApiUrl} from './Variables';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet} from 'react-native';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import {
     Card,
     CardItem,
@@ -49,7 +51,13 @@ export default class Arrow extends React.Component {
         });
         let coords;
         try {
-            coords = await getCoords();
+            // * BEGIN COORDS CODE *
+            await Permissions.askAsync(Permissions.LOCATION);
+            let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+            const { latitude , longitude } = location.coords
+            coords = {latitude, longitude};
+            // * END COORDS CODE *
+            // coords = await getCoords();
         } catch (e) {
             Toast.show({
                 text: 'Error in getting coords: ' + e,

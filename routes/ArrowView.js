@@ -6,7 +6,8 @@ import {
 // import { Col, Row, Grid } from 'react-native-easy-grid';
 import { getApiUrl } from '../components/Variables';
 import Arrow from '../components/Arrow';
-import {getCoords} from '../components/Utils';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 export default class ArrowView extends React.Component {
   constructor(props) {
@@ -83,7 +84,13 @@ export default class ArrowView extends React.Component {
       // long = -76.484368;
       let coords;
       try {
-        coords = await getCoords();
+        // * BEGIN COORDS CODE *
+        await Permissions.askAsync(Permissions.LOCATION);
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+        const { latitude , longitude } = location.coords
+        coords = {latitude, longitude};
+        // * END COORDS CODE *
+        // coords = await getCoords();
       } catch (e) {
         Toast.show({
           text: 'Error in getting coords: ' + e,
