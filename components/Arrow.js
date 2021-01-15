@@ -2,18 +2,18 @@ import {getPassword} from './Utils';
 import {getApiUrl} from './Variables';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import {
     Card,
     CardItem,
-    Text,
-    Body,
-    Toast,
+    Text
 } from 'native-base';
+// import Toast from 'react-native-simple-toast';
 // import * as Font from 'expo-font';
 import {Ionicons} from '@expo/vector-icons';
+import Toast from "react-native-toast-message";
 
 export default class Arrow extends React.Component {
     constructor(props) {
@@ -45,9 +45,7 @@ export default class Arrow extends React.Component {
 
     checkArrow = async (arrowId) => {
         Toast.show({
-            text: 'Click registered, loading...',
-            buttonText: 'Okay',
-            duration: 3000,
+            text1: 'Click registered, loading...', position: 'bottom', visibilityTime: 3000
         });
         let coords;
         try {
@@ -60,9 +58,7 @@ export default class Arrow extends React.Component {
             // coords = await getCoords();
         } catch (e) {
             Toast.show({
-                text: 'Error in getting coords: ' + e,
-                buttonText: 'Okay',
-                duration: 5000,
+                text1: 'Error in getting coords: ' + e, position: 'bottom', visibilityTime: 5000
             });
             return;
         }
@@ -81,21 +77,29 @@ export default class Arrow extends React.Component {
                 longitude: coords.longitude,
             }),
         }).then((response) => response.json()).then((responseJson) => {
-            console.log('in respons');
+            console.log('in response');
             console.log(responseJson);
             if (responseJson && responseJson.reason) {
                 console.log('response json');
                 console.log(responseJson.reason);
+                let s = responseJson.reason;
+                let middle = Math.floor(s.length / 2);
+                let before = s.lastIndexOf(' ', middle);
+                let after = s.indexOf(' ', middle + 1);
+
+                if (middle - before < after - middle) {
+                    middle = before;
+                } else {
+                    middle = after;
+                }
+                const s1 = s.substr(0, middle);
+                const s2 = s.substr(middle + 1);
                 Toast.show({
-                    text: responseJson.reason,
-                    buttonText: 'Okay',
-                    duration: 4000,
+                    text1: s1, text2: s2, position: 'bottom', visibilityTime: 4000
                 });
             } else {
                 Toast.show({
-                    text: 'Error',
-                    buttonText: 'Okay',
-                    duration: 4000,
+                    text1: 'Error', position: 'bottom', visibilityTime: 4000
                 });
             }
         }).catch((error) => {
@@ -116,6 +120,9 @@ export default class Arrow extends React.Component {
                         {'Dest: ' + this.props.latitude + ', ' + this.props.longitude}
                     </Text>
                 </CardItem>
+                <Toast ref={(toast) => this.toast = toast}                 style={{backgroundColor:'red'}}
+                       position='bottom'
+                       positionValue={200} />
             </Card>
         );
     }

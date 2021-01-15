@@ -1,13 +1,14 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
-import {
-  Content, Text, Button, Left, Toast,
-} from 'native-base';
+import { View } from "react-native";
+// import Toast from 'react-native-simple-toast';
+import { Text, Button } from 'react-native-elements';
 // import { Col, Row, Grid } from 'react-native-easy-grid';
 import { getApiUrl } from '../components/Variables';
 import Arrow from '../components/Arrow';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import Toast from 'react-native-toast-message';
 
 export default class ArrowView extends React.Component {
   constructor(props) {
@@ -24,26 +25,17 @@ export default class ArrowView extends React.Component {
   }
 
   componentDidMount() {
-    const wakeUpCloseTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.nearHomeDistance)}>
-        <Text>
-          {numHours}
-        </Text>
-      </Button>
+    //[0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9]
+    const wakeUpCloseTimes = [3, 9, 11].map(numHours => (
+      <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.nearHomeDistance)} title={numHours + ''} />
     ));
-    const wakeUpFarTimes = [0.25, 0.5, 1, 7, 7.5, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.farFromHomeDistance)}>
-        <Text>
-          {numHours}
-        </Text>
-      </Button>
+    //[0.25, 0.5, 1, 7, 7.5, 8, 8.25, 8.5, 8.75, 9]
+    const wakeUpFarTimes = [3, 9, 11].map(numHours => (
+      <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.farFromHomeDistance)} title={numHours + ''} />
     ));
-    const beAtTimes = [0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9].map(numHours => (
-      <Button key={`${numHours}a`} light large onPress={() => this.createArrowHoursAhead(numHours, 'upson', this.state.beNearCampusDistance)}>
-        <Text>
-          {numHours}
-        </Text>
-      </Button>
+    //[0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9]
+    const beAtTimes = [3, 9, 11].map(numHours => (
+      <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'upson', this.state.beNearCampusDistance)} title={numHours + ''} />
     ));
     this.setState({ wakeUpCloseTimes, wakeUpFarTimes, beAtTimes });
     setInterval(() => {
@@ -93,9 +85,7 @@ export default class ArrowView extends React.Component {
         // coords = await getCoords();
       } catch (e) {
         Toast.show({
-          text: 'Error in getting coords: ' + e,
-          buttonText: 'Okay',
-          duration: 5000,
+          text1: 'Error in getting coords: ' + e, position: 'bottom', visibilityTime: 5000
         });
         return;
       }
@@ -116,9 +106,7 @@ export default class ArrowView extends React.Component {
     }
     this.createNewQuickArrow(checkIn, lat, long, arrowType, distanceOverride);
     Toast.show({
-      text: `Arrow for ${numHoursAhead} created.`,
-      buttonText: 'Okay',
-      duration: 1500,
+      text1: `Arrow for ${numHoursAhead} created.`, position: 'bottom', visibilityTime: 1500
     });
   }
 
@@ -195,7 +183,7 @@ export default class ArrowView extends React.Component {
 
   render() {
     return (
-      <Content>
+      <View>
         <Text>You'll go back to sleep if you don't have a far alarm!</Text>
         <Text>(Getting Out of Bed) Be {this.state.nearHomeDistance}M From Current Location In:</Text>
         {this.state.wakeUpCloseTimes}
@@ -205,7 +193,10 @@ export default class ArrowView extends React.Component {
         {this.state.wakeUpFarTimes}
         <Text>Arrows</Text>
         {this.state.arrows}
-      </Content>
+        {/*<Toast ref={(toast) => this.toast = toast}                 style={{backgroundColor:'red'}}*/}
+        {/*       position='top'*/}
+        {/*       positionValue={200} />*/}
+      </View>
     );
   }
 }
