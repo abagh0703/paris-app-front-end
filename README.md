@@ -17,3 +17,5 @@ npm start
 yarn install
 yarn start
 ```
+After doing this, Expo will generate a QR code in your terminal.
+You'll need to download the Expo app and scan the QR code to access the app.
