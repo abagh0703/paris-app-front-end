@@ -21,13 +21,13 @@ export default class Arrow extends React.Component {
         this.checkArrow = this.checkArrow.bind(this);
         let directionsMessage = '';
         const arrowType = this.props.arrowType;
-        const dateInEST = new Date(this.props.checkInTime).toLocaleString("en-US", {timeZone: "America/New_York"});
-        const untilDateEST = new Date(this.props.until).toLocaleString("en-US", {timeZone: "America/New_York"});
+        const dateInPST = new Date(this.props.checkInTime).toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
+        const untilDatePST = new Date(this.props.until).toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
         if (arrowType === 'beSomewhere'){
-            directionsMessage = `Be at dest at ${dateInEST} ${this.props.dateType}.\nEnds: ${untilDateEST}`
+            directionsMessage = `Be at dest at ${dateInPST} ${this.props.dateType}.\nEnds: ${untilDatePST}`
         }
         else if (arrowType === 'leaveSomewhere'){
-            directionsMessage = `Don't be at dest at ${dateInEST} ${this.props.dateType}.\nEnds: ${untilDateEST}`
+            directionsMessage = `Don't be at dest at ${dateInPST} ${this.props.dateType}.\nEnds: ${untilDatePST}`
         }
         else {
             directionsMessage = `${arrowType} is an unsupported arrow type`;
