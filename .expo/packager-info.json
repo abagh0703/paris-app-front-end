@@ -1,10 +1,10 @@
 {
-  "expoServerPort": null,
+  "expoServerPort": 19000,
   "packagerPort": 19000,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerNgrokUrl": "https://di-jhx.abagh0703.paris-app-front-end.exp.direct",
+  "packagerNgrokUrl": "https://packager.di-jhx.abagh0703.paris-app-front-end.exp.direct",
+  "ngrokPid": 15572,
   "devToolsPort": 19002,
   "webpackServerPort": null
 }

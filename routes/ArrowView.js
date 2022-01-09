@@ -34,8 +34,8 @@ export default class ArrowView extends React.Component {
       <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'Current Location', this.state.farFromHomeDistance)} title={numHours + ''} />
     ));
     //[0.25, 0.5, 0.75, 1, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9]
-    const beAtTimes = [3, 9, 11].map(numHours => (
-      <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'upson', this.state.beNearCampusDistance)} title={numHours + ''} />
+    const beAtTimes = [1, 3, 9, 11].map(numHours => (
+      <Button key={`${numHours}a`} size={15} onPress={() => this.createArrowHoursAhead(numHours, 'SM library', this.state.beNearCampusDistance)} title={numHours + ''} />
     ));
     this.setState({ wakeUpCloseTimes, wakeUpFarTimes, beAtTimes });
     setInterval(() => {
@@ -95,7 +95,12 @@ export default class ArrowView extends React.Component {
       lat = 42.445155;
       long = -76.483463;
       arrowType = 'beSomewhere';
-    } else {
+    } else if (location === 'SM library') {
+      lat = 37.5624602052;
+      long = -122.3268596;
+      arrowType = 'beSomewhere';
+    }
+    else {
       return;
     }
     let checkIn = currentMsTime + numHoursInMs;
@@ -184,10 +189,10 @@ export default class ArrowView extends React.Component {
   render() {
     return (
       <View>
-        <Text>You'll go back to sleep if you don't have a far alarm!</Text>
+        <Text>Home should be for a relaxing mindset, not a working one!</Text>
         <Text>(Getting Out of Bed) Be {this.state.nearHomeDistance}M From Current Location In:</Text>
         {this.state.wakeUpCloseTimes}
-        <Text>Be within {this.state.beNearCampusDistance}M of Campus In:</Text>
+        <Text>Be within {this.state.beNearCampusDistance}M of SM Library In:</Text>
         {this.state.beAtTimes}
         <Text>Be {this.state.farFromHomeDistance} Meters From Current Location In:</Text>
         {this.state.wakeUpFarTimes}
