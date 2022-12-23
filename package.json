@@ -15,7 +15,7 @@
     "@unimodules/core": "~7.2.0",
     "create-react-class": "^15.7.0",
     "eslint-config-airbnb": "^17.1.0",
-    "expo": "^44.0.0",
+    "expo": "47.0.9",
     "expo-cli": "^5.0.3",
     "expo-location": "~14.0.1",
     "expo-permissions": "~13.1.0",

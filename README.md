@@ -19,3 +19,6 @@ yarn start
 ```
 After doing this, Expo will generate a QR code in your terminal.
 You'll need to download the Expo app and scan the QR code to access the app.
+
+## Updating Expo
+Expo drops support for older versions of expo quickly, so if Expo isn't working then simply run `yanr upgrade expo --latest`
