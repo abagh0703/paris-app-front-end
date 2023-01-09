@@ -4,7 +4,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, View} from 'react-native';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import {
     Card,
     CardItem,
@@ -50,7 +49,7 @@ export default class Arrow extends React.Component {
         let coords;
         try {
             // * BEGIN COORDS CODE *
-            await Permissions.askAsync(Permissions.LOCATION);
+            // await Permissions.askAsync(Permissions.LOCATION);
             let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
             const { latitude , longitude } = location.coords
             coords = {latitude, longitude};

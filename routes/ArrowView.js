@@ -7,7 +7,6 @@ import { Text, Button } from 'react-native-elements';
 import { getApiUrl } from '../components/Variables';
 import Arrow from '../components/Arrow';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import Toast from 'react-native-toast-message';
 
 export default class ArrowView extends React.Component {
@@ -77,7 +76,6 @@ export default class ArrowView extends React.Component {
       let coords;
       try {
         // * BEGIN COORDS CODE *
-        await Permissions.askAsync(Permissions.LOCATION);
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
         const { latitude , longitude } = location.coords
         coords = {latitude, longitude};
