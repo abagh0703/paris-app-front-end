@@ -49,20 +49,16 @@ export default class Arrow extends React.Component {
         let coords;
         try {
             // * BEGIN COORDS CODE *
-            // await Permissions.askAsync(Permissions.LOCATION);
             let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
             const { latitude , longitude } = location.coords
             coords = {latitude, longitude};
             // * END COORDS CODE *
-            // coords = await getCoords();
         } catch (e) {
             Toast.show({
                 text1: 'Error in getting coords: ' + e, position: 'bottom', visibilityTime: 5000
             });
             return;
         }
-        console.log('coords');
-        console.log(coords);
         const password = getPassword();
         fetch(`${getApiUrl()}/arrows/` + this.props.arrowId, {
             method: 'DELETE',
@@ -130,7 +126,7 @@ export default class Arrow extends React.Component {
 Arrow.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
-    dateType: PropTypes.oneOf(['once', 'daily', 'weekly']),
+    dateType: PropTypes.oneOf(['once', 'daily', 'weekly', 'weekdays']),
     checkInTime: PropTypes.number,
     label: PropTypes.string,
     arrowType: PropTypes.string,
