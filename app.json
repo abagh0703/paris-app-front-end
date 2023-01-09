@@ -5,7 +5,6 @@
     "name": "Paris",
     "slug": "Paris",
     "privacy": "public",
-    "sdkVersion": "44.0.0",
     "platforms": [
       "ios",
       "android"
